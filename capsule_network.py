@@ -245,6 +245,8 @@ mnist = Mnist()
 optimizer = torch.optim.Adam(capsule_net.parameters(), lr=LR)
 
 for epoch in range(EPOCH):
+    print ('EPOCH', epoch)
+
     # training process
     capsule_net.train()
     for batch_id, (data, target) in enumerate(mnist.train_loader):
@@ -277,5 +279,5 @@ for epoch in range(EPOCH):
         output, reconstructions, masked = capsule_net(data)
 
         if batch_id % 100 == 0:
-            print('test accuracy:', sum(np.argmax(masked.data.cpu.numpy(), 1) ==
-                        np.argmax(target.data.cpu.numpy(), 1)) / float(BATCH_SIZE))
+            print('test accuracy:', sum(np.argmax(masked.data.cpu().numpy(), 1) ==
+                        np.argmax(target.data.cpu().numpy(), 1)) / float(BATCH_SIZE))
