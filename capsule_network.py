@@ -54,7 +54,8 @@ class Mnist:
         
         self.test_loader = Data.DataLoader(
             dataset=test_data,
-            batch_size=BATCH_SIZE,
+            # batch_size=BATCH_SIZE,
+            batch_size = 10000,
             shuffle=True,
         )
 
@@ -244,6 +245,8 @@ if USE_CUDA:
 mnist = Mnist()
 optimizer = torch.optim.Adam(capsule_net.parameters(), lr=LR)
 
+doc = open('result.txt', 'w')
+
 for epoch in range(EPOCH):
     print ('EPOCH', epoch)
 
@@ -264,8 +267,10 @@ for epoch in range(EPOCH):
         optimizer.step()
 
         if batch_id % 100 == 0:
-            print('train accuracy:', sum(np.argmax(masked.data.cpu().numpy(), 1) == 
-                        np.argmax(target.data.cpu().numpy(), 1)) / float(BATCH_SIZE))
+            acc =  sum(np.argmax(masked.data.cpu().numpy(), 1) == 
+                        np.argmax(target.data.cpu().numpy(), 1)) / float(BATCH_SIZE)
+            print('train accuracy: %.4f' % acc)
+            print('train accuracy: %.4f' % acc, file=doc)
 
     # testing process
     capsule_net.eval()
@@ -278,6 +283,9 @@ for epoch in range(EPOCH):
 
         output, reconstructions, masked = capsule_net(data)
 
-        if batch_id % 100 == 0:
-            print('test accuracy:', sum(np.argmax(masked.data.cpu().numpy(), 1) ==
-                        np.argmax(target.data.cpu().numpy(), 1)) / float(BATCH_SIZE))
+        if batch_id % 10000 == 0:
+            acc = sum(np.argmax(masked.data.cpu().numpy(), 1) ==
+                        np.argmax(target.data.cpu().numpy(), 1)) / float(BATCH_SIZE)
+            print('test accuracy: %.4f' % acc)
+            print('test accuracy: %.4f' % acc, file=doc)
+doc.close();
