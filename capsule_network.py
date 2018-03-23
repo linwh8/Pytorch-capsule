@@ -1,4 +1,4 @@
-#
+# 
 # Dynamic Routing Between Capsules
 # https://arxiv.org/pdf/1710.09829.pdf
 #
@@ -136,7 +136,7 @@ class DigitCaps(nn.Module):
         # Dynamic routing
         num_iteration = 3
         for iteration in range(num_iteration):
-            c_ij = F.softmax(b_ij) # c_ij: (1, 32*6*6, 10, 1)
+            c_ij = F.softmax(b_ij, dim=1) # c_ij: (1, 32*6*6, 10, 1)
             c_ij = torch.cat([c_ij] * BATCH_SIZE, dim=0).unsqueeze(4) # c_ij: (100, 32*6*6, 10, 1, 1)
 
             s_j = (c_ij * u_hat).sum(dim=1, keepdim=True) # s_j: (100, 1, 10, 16, 1)
@@ -175,7 +175,7 @@ class Decoder(nn.Module):
     def forward(self, x, data):
         # x: (100, 10, 16, 1)
         classes = torch.sqrt((x**2).sum(2)) # classes: (100, 10, 1)
-        classes = F.softmax(classes) # classes: (100, 10, 1)
+        classes = F.softmax(classes, dim=1) # classes: (100, 10, 1)
 
         _, max_length_index = classes.max(dim=1) # max_length_index: (100, 1)
         masked = Variable(torch.sparse.torch.eye(10)) # masked: (10, 10)
